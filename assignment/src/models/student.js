@@ -1,8 +1,7 @@
-"use strict";
 module.exports = (sequelize, DataTypes) => {
   const Student = sequelize.define("Student", {
-    name: DataTypes.STRING,
-    grade: DataTypes.STRING,
+    email: { type: DataTypes.STRING, unique: true, allowNull: false },
+    suspended: { type: DataTypes.BOOLEAN, defaultValue: false },
   });
   return Student;
 };

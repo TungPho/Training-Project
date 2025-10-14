@@ -1,36 +1,36 @@
-version: "3.9"
+version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_container
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: school_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpass
-    ports:
-      - "3307:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-
-  app:
+  api:
     build: .
-    container_name: express_app
-    restart: always
-    depends_on:
-      - mysql
+    env_file: .env
     ports:
       - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      - DB_HOST=mysql
-      - DB_USER=user
-      - DB_PASS=userpass
-      - DB_NAME=school_db
+      DB_HOST: db
+      DB_NAME: school
+      DB_USER: root
+      DB_PASS: password
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: school
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
     volumes:
-      - .:/app
-    command: ["npm", "start"]
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
 volumes:
   db_data:

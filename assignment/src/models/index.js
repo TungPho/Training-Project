@@ -1,23 +1,19 @@
-"use strict";
 const { Sequelize, DataTypes } = require("sequelize");
-const config = require("../config/config.js").development;
-
 const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  { host: config.host, dialect: config.dialect }
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
+    host: process.env.DB_HOST,
+    dialect: "mysql",
+  }
 );
 
-const db = {};
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
+const Student = require("./student")(sequelize, DataTypes);
+const Teacher = require("./teacher")(sequelize, DataTypes);
+const Registration = require("./registration")(sequelize, DataTypes);
 
-db.Teacher = require("./teacher")(sequelize, DataTypes);
-db.Student = require("./student")(sequelize, DataTypes);
+Teacher.belongsToMany(Student, { through: Registration });
+Student.belongsToMany(Teacher, { through: Registration });
 
-// Many-to-Many
-db.Teacher.belongsToMany(db.Student, { through: "TeacherStudents" });
-db.Student.belongsToMany(db.Teacher, { through: "TeacherStudents" });
-
-module.exports = db;
+module.exports = { sequelize, Student, Teacher, Registration };
