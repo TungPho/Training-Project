@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { sequelize } = require("./models");
-const apiRoutes = require("./routes/api");
+const apiRoutes = require("./routes/teacher.api.business");
 
 const app = express();
 app.use(express.json());

@@ -16,7 +16,9 @@ router.post("/register", async (req, res) => {
     });
     await teacherObj.addStudent(studentObj);
   }
-  res.status(204).end();
+  return res.status(201).json({
+    message: "Register successfully!",
+  });
 });
 
 // 2. Get common students
@@ -33,7 +35,7 @@ router.get("/commonstudents", async (req, res) => {
   });
   const studentLists = teachers.map((t) => t.Students.map((s) => s.email));
   const common = studentLists.reduce((a, b) => a.filter((c) => b.includes(c)));
-  res.status(200).json({ students: common });
+  return res.status(200).json({ students: common });
 });
 
 // 3. Suspend student
@@ -45,7 +47,9 @@ router.post("/suspend", async (req, res) => {
   if (!studentObj) return res.status(404).json({ error: "Student not found" });
   studentObj.suspended = true;
   await studentObj.save();
-  res.status(204).end();
+  return res.status(204).json({
+    message: "Suspend Student Successfully!",
+  });
 });
 
 // 4. Retrieve notification recipients
@@ -111,7 +115,22 @@ router.get("/students", async (req, res) => {
       })),
     });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/teachers", async (req, res) => {
+  try {
+    const teachers = await Teacher.findAll({
+      attributes: ["email"],
+    });
+    res.status(200).json({
+      teachers: teachers.map((t) => ({
+        email: t.email,
+      })),
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 module.exports = router;
