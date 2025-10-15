@@ -1,6 +1,8 @@
-require("dotenv").config();
-const { sequelize, Teacher, Student } = require("./models");
+const Database = require("./dbs/db.connect");
 
+require("dotenv").config();
+const db = Database.getInstance();
+const { Student, Teacher, sequelize } = db;
 async function seed() {
   await sequelize.sync({ force: true }); // Xóa hết DB và tạo lại (nên dùng khi dev, nếu prod thì bỏ force)
 
